@@ -11,8 +11,9 @@
 #include "lwip/udp.h"
 #include "secret-credentials.h"	// create this file yourself and define WIFI_SSID and WIFI_PASSWORD in there
 
-#define  RECEIVER_IP  "192.168.4.8"	// update this to the IP of the computer that runs the "udp_sender.py" program
-#define  RECEIVER_PORT 6001
+#define RECEIVER_IP  "192.168.4.8"	// update this to the IP of the computer that runs the "udp_sender.py" program
+#define RECEIVER_PORT 6001
+#define OWN_PORT 6002
 
 #define DEBUG_printf  printf
 
@@ -82,7 +83,7 @@ int main() {
 	upcb = udp_new();
 	spcb = udp_new();
 
-	err_t err = udp_bind(spcb,IP_ADDR_ANY,6002);
+	err_t err = udp_bind(spcb, IP_ADDR_ANY, OWN_PORT);
 
 	udp_recv (spcb, RcvFromUDP, NULL);
 
