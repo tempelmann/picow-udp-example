@@ -20,7 +20,7 @@
 bool TimerFlag = false;
 
 static bool Send_udp_stuff(repeating_timer_t *rt) {
-	  TimerFlag = true;
+	TimerFlag = true;
 }
 
 static struct udp_pcb *upcb;
@@ -39,9 +39,9 @@ void SendUDP(char *ip, int port, void * data, int data_size) {
 void RcvFromUDP(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port) {
 	char ip[32];
 	ip4addr_ntoa_r (addr, ip, sizeof(ip));
-	printf ("received from %s:%d\n", ip, port);
-	printf ("length: %d, total: %d\n", p->len, p->tot_len);
+	printf ("received from %s:%d, len %d, total %d\n", ip, port, p->len, p->tot_len);
 	//printf ("payload -> %s\n", (char*) p->payload);
+	pbuf_free(p);	// this is needed or we'll stop receiving packets after a while!
 }
 
 
@@ -87,14 +87,14 @@ int main() {
 
 	udp_recv (spcb, RcvFromUDP, NULL);
 
-	while(1) {
-	   	if(TimerFlag) {
+	while (1) {
+	   	if (TimerFlag) {
 			memset(buffer,0,sizeof(buffer));
 			sprintf(buffer,"%u\n",loop++);
 			SendUDP (RECEIVER_IP, RECEIVER_PORT, buffer, sizeof(buffer));
 			TimerFlag=false;
 		}
-	   cyw43_arch_poll();
+		cyw43_arch_poll();
 	}
 	udp_remove(upcb);
 	udp_remove(spcb);
