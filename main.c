@@ -25,10 +25,10 @@ static bool Send_udp_stuff(repeating_timer_t *rt) {
 
 static struct udp_pcb *upcb;
 
-void SendUDP(char *ip, int port, void * data, int data_size) {
+void SendUDP (char *ip, int port, void * data, int data_size) {
 	ip_addr_t destAddr;
 	ip4addr_aton (ip, &destAddr);
-	struct pbuf * p = pbuf_alloc (PBUF_TRANSPORT, data_size, PBUF_RAM);
+	struct pbuf *p = pbuf_alloc (PBUF_TRANSPORT, data_size, PBUF_RAM);
 	memcpy (p->payload, data, data_size);
 	cyw43_arch_lwip_begin();
 	udp_sendto (upcb, p, &destAddr, port);
@@ -36,11 +36,21 @@ void SendUDP(char *ip, int port, void * data, int data_size) {
 	pbuf_free(p);
 }
 
-void RcvFromUDP(void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port) {
+void RcvFromUDP (void *arg, struct udp_pcb *pcb, struct pbuf *p, const ip_addr_t *addr, u16_t port) {
 	char ip[32];
 	ip4addr_ntoa_r (addr, ip, sizeof(ip));
-	printf ("received from %s:%d, len %d, total %d\n", ip, port, p->len, p->tot_len);
-	//printf ("payload -> %s\n", (char*) p->payload);
+	if (p->tot_len == p->len) {
+		// single fragment
+		printf ("Rcv from %s:%d, len %d\n", ip, port, p->tot_len);
+	} else {
+		printf ("Rcv from %s:%d, total %d [", ip, port, p->tot_len);
+		for (struct pbuf *q = p; q != NULL; q = q->next) {	// we need to go over all fragments (it'll be more than one if size > MTU)
+			printf("%d", q->len);
+			//printf (" (%s)", (char*) p->payload);
+			if (q->next) printf(" ");
+		}
+		printf("]\n");
+	}
 	pbuf_free(p);	// this is needed or we'll stop receiving packets after a while!
 }
 
@@ -88,7 +98,7 @@ int main() {
 	udp_recv (spcb, RcvFromUDP, NULL);
 
 	while (1) {
-	   	if (TimerFlag) {
+		if (TimerFlag) {
 			memset(buffer,0,sizeof(buffer));
 			sprintf(buffer,"%u\n",loop++);
 			SendUDP (RECEIVER_IP, RECEIVER_PORT, buffer, sizeof(buffer));
