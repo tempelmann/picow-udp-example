@@ -2,6 +2,7 @@
 //
 // Based on code by danjperron at https://forums.raspberrypi.com/viewtopic.php?t=340208#p2039727
 // Special thanks to hippy (https://forums.raspberrypi.com/memberlist.php?mode=viewprofile&u=1729)
+// Discussion that led to this: https://forums.raspberrypi.com/viewtopic.php?t=373977
 //
 
 #include <string.h>
