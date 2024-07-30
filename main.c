@@ -1,6 +1,7 @@
 // Part of https://github.com/tempelmann/picow-udp-example
 //
 // Based on code by danjperron at https://forums.raspberrypi.com/viewtopic.php?t=340208#p2039727
+// Special thanks to hippy (https://forums.raspberrypi.com/memberlist.php?mode=viewprofile&u=1729)
 //
 
 #include <string.h>
