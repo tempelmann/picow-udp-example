@@ -3,7 +3,7 @@
 # Part of https://github.com/tempelmann/picow-udp-example
 
 # Set this to the Pico's IP address which it will print once it's connected to WiFi:
-IP = "192.168.4.246"
+IP = "192.168.4.255" # use 255 at the last field for broadcast to work to the entire network
 
 PORT=6002
 
@@ -20,9 +20,10 @@ for n in range(PAYLOAD_SIZE):
 write_buf = bytearray(random_list)
 
 sock = socket.socket(socket.AF_INET,socket.SOCK_DGRAM)
-count = 1;
+sock.setsockopt(socket.SOL_SOCKET,socket.SO_BROADCAST,1)
 
 try:
+    count = 1;
     while True:
        #msg = "Send to Pico {} times\n\0".format(count).encode('utf-8')
        msg = write_buf
